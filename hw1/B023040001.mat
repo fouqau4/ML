@@ -1,0 +1,47 @@
+load('HW1.mat');
+
+%initialization
+
+lambda = 10 ^ -1;
+step = 1 * 10 ^ -7;
+epsilon = 10 ^ -3;
+L = 10 ^ 5;
+
+theta_optmized = inv( Phi' * Phi + lambda * eye( size( Phi, 2 ) ) ) * Phi' * y;
+
+theta = zeros( size( Phi, 2 ), 1 ); % # of row of theta = # of column of Phi
+J = norm( Phi * theta - y ) .^ 2 + lambda * norm( theta ) .^ 2;
+J_new = zeros( 1, 1 );
+error = zeros( 1, 1 );
+
+
+for i = 1 : L
+	grad_J = 2 * ( Phi' * Phi * theta - Phi' * y + lambda * theta );
+	theta_new = theta - step * grad_J;
+
+	J_new( i ) = norm( Phi * theta_new - y ) .^ 2 + lambda * norm( theta ) .^ 2;
+
+	error( i ) = norm( theta_optmized - theta, 1 );
+
+	if abs( J_new( i ) - J ) < epsilon
+		break;
+	elseif J_new( i ) > J
+		fprintf("Does not converge! \n");
+		break;
+	else
+		J = J_new( i );
+		theta = theta_new;
+	end
+end
+
+figure( 1 )
+plot( 1 : i, J_new );
+grid on;
+ylabel('J(theta)')
+xlabel('iteration number')
+
+figure( 2 )
+plot( 1 : i, error );
+grid on;
+ylabel( 'error of theta' )
+xlabel( 'iteration number' )
