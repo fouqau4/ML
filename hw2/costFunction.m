@@ -24,7 +24,7 @@ grad = zeros( size( theta ) );
 % h_of_theta => mx1
 
 
-h_of_theta = 1 / ( 1 + exp( X' * theta ) );
+h_of_theta = 1 / ( 1 + exp( X * theta ) );
 
 grad = 1 / m * X' * ( h_of_theta - y );
 
