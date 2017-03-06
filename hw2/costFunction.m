@@ -21,8 +21,7 @@ grad = zeros( size( theta ) );
 
 
 J = ( 1 / ( 2 * m ) ) * norm( X * theta - y ) .^ 2 + ( 1 / 2 ) * lambda * norm( theta ) .^ 2;
-
-grad = ( 1 / m ) * ( X' * ( X * theta - y ) ) + lambda * theta;
+grad = ( 1 / m ) * ( X' * ( X * theta - y ) ) + lambda .* theta;
 
 % =============================================================
 
