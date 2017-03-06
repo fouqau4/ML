@@ -4,11 +4,6 @@ clear
 load('hw2_max_demand.txt');
 load('hw2_max_temp.txt');
 
-A = [ hw2_max_demand hw2_max_temp ];
-figure( 'Name', 'temp/demand' );
-scatter( hw2_max_temp, hw2_max_demand );
-ylabel('demand');
-xlabel('temperature');
 
 
 X_linear = [ ones( size( hw2_max_temp, 1 ), 1 ) ( ( hw2_max_temp - mean( hw2_max_temp ) ) / range( hw2_max_temp ) ) ];
@@ -82,6 +77,32 @@ J_non_linear
 [ min_cost_non_linear, min_cost_non_linear_index ] = min(J_non_linear)
 performance_non_linear = ( 1 / ( 2 * partition(3) ) ) * norm( X_non_linear_perf * theta_non_linear( :, min_cost_non_linear_index ) - y_perf ) .^ 2
 
-figure(2)
-plot(1:length(lambda), J_non_linear)
 
+figure( 'Name', 'temp/demand' );
+plot( hw2_max_temp, hw2_max_demand, 'x' );
+ylabel('demand');
+xlabel('temperature');
+
+color = [ 'y' 'm' 'c' 'r' 'g' 'b' ]
+
+figure( 'Name', 'J_linear');
+hold on;
+for i = 1 : length( lambda )
+	bar( i, J_linear( i ), 0.3, color( i ) );
+end
+legend('lambda = 1e-2', 'lambda = 1e-3', 'lambda = 1e-4', 'lambda = 1e-5', 'lambda = 1e-6', 'lambda = 1e-7');
+hold off;
+ylabel( 'J(theta)' );
+xlabel( 'lambda' );
+
+figure( 'Name', 'J_non_linear' );
+hold on;
+for i = 1 : length( lambda )
+	bar( i, J_non_linear( i ), color( i ), 0.3 );
+end
+legend('lambda = 1e-2', 'lambda = 1e-3', 'lambda = 1e-4', 'lambda = 1e-5', 'lambda = 1e-6', 'lambda = 1e-7');
+hold off;
+ylabel( 'J(theta)' );
+xlabel( 'lambda' );
+
+%pause
