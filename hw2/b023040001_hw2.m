@@ -134,3 +134,9 @@ for j = 1 : size( n, 2 )
 	ylabel('error')
 end
 legend('linear', '3', '4', '5', '6' )
+
+figure(5)
+plot( n, J(1,:));hold on;
+xlabel('n')
+ylabel('Error')
+

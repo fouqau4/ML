@@ -32,3 +32,5 @@ plot(lambda, J(:, j)); hold on;
 xlabel('\lambda')
 ylabel('Error')
 end
+n
+J_per
