@@ -11,10 +11,21 @@ figure; hold on;
 %               2D plot, using the option 'k+' for the positive
 %               examples and 'ko' for the negative examples.
 %
-pos = find( y == 1 );
-neg = find( y == 0 );
-plot( X( pos, 1 ), X( pos, 2 ), 'k+', 'LineWidth', 2, 'MarkerSize', 7 );
-plot( X( neg, 1 ), X( neg, 2 ), 'ko', 'MarkerFaceColor', 'y', 'MarkerSize', 7 );
+
+for i = 1 : size( y, 1 )
+	if y(i) == 1 
+		plot( X, 'x' );
+	else
+		plot( X, 'o' );
+	end
+
+end
+
+
+
+
+
+
 
 % =========================================================================
 
