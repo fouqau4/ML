@@ -11,8 +11,8 @@ theta_initial = zeros( size( X, 2 ), 1 );
 
 m = size( y, 1 );
 
-tra = round( 0.7 * m );
-val = round( 0.9 * m );
+tra = ceil( 0.7 * m );
+val = ceil( 0.9 * m );
 
 lambda = [ 0:0.1:2 ];
 caseNum = size( lambda, 2 );
