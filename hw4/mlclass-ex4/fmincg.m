@@ -66,7 +66,7 @@ argstr = ['feval(f, X'];                      % compose string used to call func
 for i = 1:(nargin - 3)
   argstr = [argstr, ',P', int2str(i)];
 end
-argstr = [argstr, ')'];
+argstr = [argstr, ')'];     % feval(f, X, P1, P2, P3, ... Pn )
 
 if max(size(length)) == 2, red=length(2); length=length(1); else red=1; end
 S=['Iteration '];

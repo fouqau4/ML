@@ -71,8 +71,24 @@ X = [ ones( m, 1 ) X  ];
 
 h = sigmoid( [ ones( m, 1 ) sigmoid( X * Theta1' ) ] * Theta2' );
 
-J = ( 1 / m ) * sum( ( -Y .* log( h ) - ( 1 - Y ) .* log( 1 - h ) )(:) ) + ( lambda / ( 2 * m ) ) * ( sum( Theta1(:) .^ 2 ) + sum( Theta2(:) .^ 2 ) );
+J = ( 1 / m ) * sum( ( -Y .* log( h ) - ( 1 - Y ) .* log( 1 - h ) )(:) ) + ...
+	( lambda / ( 2 * m ) ) * ( sum( Theta1(:,2:end)(:) .^ 2 ) + sum( Theta2(:,2:end)(:) .^ 2 ) );
 
+% forward pass 
+
+a1 = X; % 5000 x 401
+z2 = a1 * Theta1'; % 5000 x 25
+a2 = [ ones( m, 1 ) sigmoid( z2 ) ]; % 5000 x 26
+z3 = a2 * Theta2'; % 5000 x 10
+a3 = sigmoid( z3 ); % 5000 x 10
+
+% backpropagation
+d3 = a3 - Y;
+d2 =  d3 * Theta2 .* [ ones( m, 1 ) sigmoidGradient( z2 ) ]; % 5000 x 25
+d2 = d2( :, 2:end );
+
+Theta2_grad = ( 1 / m ) * d3' * a2 + ( lambda / m ) * [ zeros( size( Theta2, 1 ), 1 ) Theta2( :, 2:end ) ];
+Theta1_grad = ( 1 / m ) * d2' * a1 + ( lambda / m ) * [ zeros( size( Theta1, 1 ), 1 ) Theta1( :, 2:end) ];
 
 % -------------------------------------------------------------
 
