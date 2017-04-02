@@ -29,8 +29,9 @@ patches = zeros(patchsize*patchsize, numpatches);
 imageSample = zeros(patchsize,patchsize);
 
 for i = 1:numpatches
-    
+    % random one image from N images
     imIndex = ceil(N*rand);
+	% random the start position of selected image
     xIndex = ceil((X-patchsize)*rand);
     yIndex = ceil((Y-patchsize)*rand);
     

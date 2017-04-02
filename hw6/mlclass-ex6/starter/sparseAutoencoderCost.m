@@ -58,57 +58,97 @@ Db2 = zeros(size(b2));
 % rho accumulator vector
 rhoAcc = zeros(size(W1,1),1);
 
-for i = 1:m
+%for i = 1:m
 
-    y = data(:,i);
-    x = y;
+%    y = data(:,i);
+%    x = y;
     
-    a1 = x;
-    z2 = W1*a1 + b1;
-    a2 = sigmoid(z2);
+%    a1 = x;
+%    z2 = W1*a1 + b1;
+%    a2 = sigmoid(z2);
     
-    rhoAcc = rhoAcc + a2;
+%    rhoAcc = rhoAcc + a2;
     
-end
+%end
 
-rho = 1/m*rhoAcc;
+%rho = 1/m*rhoAcc;
+
+
+% b1 = 100 x 1
+% b2 = 64 x 1
+
+% data = y = a1 : 64 x 10000
+y = data;
+a1 = data;
+% z2 : 100x64 * 64x10000 .+ 100x1 = 100 x 10000
+z2 = W1 * a1 .+ b1;
+% a2 = 100 x 10000
+a2 = sigmoid( z2 );
+% z3 = 64x100 * 100x10000 .+ 64x1 = 64 x 10000
+z3 = W2 * a2 .+ b2 ;
+% a3 = 64 x 10000
+a3 = sigmoid( z3 );
+% hx = 64 x 10000
+hx = a3;
+% rho : 100 x 1
+rho = sum( a2, 2 ) ./ m;
+% delta3 : 64 x 10000
+delta3 = -( y - hx ) .* hx .* ( 1 - hx );
+% delta2 : (64x100)' * 64x10000 =  100 x 10000
+delta2 = ( ( W2' * delta3 ) .+ ( beta * ( -sparsityParm./rho + -( 1 - sparsityParm )/( 1 - rho ) ) ) ) .* a2 .* ( 1 - a2 );
+
+D1 = 1 / m * delta2 * a1' + lambda * W1;
+D2 = 1 / m * delta3 * a2' + lambda * W2;
+
+Db1 = 1 / m * delta2 * ones( m, 1 ) + lambda * 0;
+Db2 = 1 / m * delta3 * ones( m, 1 ) + lambda * 0;
+
 %%
 
 %% Hint: A way to compute DW1, DW2, Db1, Db2
-for i = 1:m
 
-    y = data(:,i);
-    x = y;
+
+
+%for i = 1:m
+
+%    y = data(:,i);
+%    x = y;
+% a1 = 64 x 1    
+%    a1 = x;
+% z2 = 100x64 * 64x1 + 100x1 = 100 x 1
+%    z2 = W1*a1 + b1;
+% a2 = 100 x 1
+%    a2 = sigmoid(z2);
+% z3 = 64x100 * 100x1 + 64x1 = 64 x 1
+%    z3 = W2*a2 + b2;
+% a3 = 64 x 1
+%    a3 = sigmoid(z3);
+%    hx = a3;
     
-    a1 = x;
-    z2 = W1*a1 + b1;
-    a2 = sigmoid(z2);
-    z3 = W2*a2 + b2;
-    a3 = sigmoid(z3);
-    hx = a3;
-    
-    partCost = partCost + 1/2*norm(hx-y).^2;
-    
-    delta3 = -(y-a3).*a3.*(1-a3);
-    
+%    partCost = partCost + 1/2*norm(hx-y).^2;
+% delta3 = 64 x 1    
+%    delta3 = -(y-a3).*a3.*(1-a3);
+% delta2 = (64x100)' * 64x1 = 100 x 1    
     % dalta 2 withour sparsity parameter is:
     % delta2 = W2'*delta3.*a2.*(1-a2);
-    delta2 = (W2'*delta3 + ...
-        beta*(-sparsityParam./rho + (1-sparsityParam)./(1-rho))).*a2.*(1-a2);
+%    delta2 = (W2'*delta3 + ...
+%        beta*(-sparsityParam./rho + (1-sparsityParam)./(1-rho))).*a2.*(1-a2);
     
     %delta1 = W1'*delta2.*a1.*(1-a1);
-    
-    curW1grad = delta2*a1';
-    curb1grad = delta2;
-    curW2grad = delta3*a2';
-    curb2grad = delta3;
-    
-    DW1 = DW1 + curW1grad;
-    DW2 = DW2 + curW2grad;
-    Db1 = Db1 + curb1grad;
-    Db2 = Db2 + curb2grad;
-    
-end
+
+% curW1grad = 100x1 * (64x1)' = 100 x 64
+%    curW1grad = delta2*a1';
+% curb1grad = 100 x 1
+%    curb1grad = delta2;
+%    curW2grad = delta3*a2';
+%    curb2grad = delta3;
+%    
+%    DW1 = DW1 + curW1grad;
+%    DW2 = DW2 + curW2grad;
+%    Db1 = Db1 + curb1grad;
+%    Db2 = Db2 + curb2grad;
+%    
+%end
 
 
 
