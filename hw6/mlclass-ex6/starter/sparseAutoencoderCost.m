@@ -59,49 +59,64 @@ Db2 = zeros(size(b2));
 rhoAcc = zeros(size(W1,1),1);
 
 %for i = 1:m
-
+% y = x = a1 = 64x1
 %    y = data(:,i);
 %    x = y;
     
 %    a1 = x;
+% z2 = 25x64 * 64x1 + 25x1 = 25x1
 %    z2 = W1*a1 + b1;
+% a2 = 25x1
 %    a2 = sigmoid(z2);
     
 %    rhoAcc = rhoAcc + a2;
     
 %end
-
+% rho = 25x1
 %rho = 1/m*rhoAcc;
 
 
-% b1 = 100 x 1
+% b1 = 25 x 1
 % b2 = 64 x 1
 
 % data = y = a1 : 64 x 10000
 y = data;
 a1 = data;
-% z2 : 100x64 * 64x10000 .+ 100x1 = 100 x 10000
+% z2 : 25x64 * 64x10000 .+ 25x1 = 25 x 10000
 z2 = W1 * a1 .+ b1;
-% a2 = 100 x 10000
+% a2 = 25 x 10000
 a2 = sigmoid( z2 );
-% z3 = 64x100 * 100x10000 .+ 64x1 = 64 x 10000
+% z3 = 64x25 * 25x10000 .+ 64x1 = 64 x 10000
 z3 = W2 * a2 .+ b2 ;
 % a3 = 64 x 10000
 a3 = sigmoid( z3 );
 % hx = 64 x 10000
 hx = a3;
-% rho : 100 x 1
+% rho : 25 x 1
 rho = sum( a2, 2 ) ./ m;
-% delta3 : 64 x 10000
-delta3 = -( y - hx ) .* hx .* ( 1 - hx );
-% delta2 : (64x100)' * 64x10000 =  100 x 10000
-delta2 = ( ( W2' * delta3 ) .+ ( beta * ( -sparsityParm./rho + -( 1 - sparsityParm )/( 1 - rho ) ) ) ) .* a2 .* ( 1 - a2 );
 
-D1 = 1 / m * delta2 * a1' + lambda * W1;
-D2 = 1 / m * delta3 * a2' + lambda * W2;
+% delta3 : (64x10000 - 64x10000) .* 64x10000 .* 64x10000
+delta3 = -( y - hx ) .* hx .* ( 1 .- hx );
+% delta2 : ( (64x25)' * 64x10000 .+ (25x1 + 25x1) )
+%           .* 25x10000 .* 25x10000  =  25 x 10000
+delta2 = ( ( W2' * delta3 ) .+ ( beta .* ( -sparsityParam./rho + ( 1 - sparsityParam )./( 1 .- rho ) ) ) ) .* a2 .* ( 1 - a2 );
 
-Db1 = 1 / m * delta2 * ones( m, 1 ) + lambda * 0;
-Db2 = 1 / m * delta3 * ones( m, 1 ) + lambda * 0;
+% D1 = 25x10000 * (64x10000)' = 25x64
+D1 = delta2 * a1';
+% D2 = 64x10000 * (25x10000)' = 64x25
+D2 = delta3 * a2';
+
+W1grad = 1 / m * D1 + lambda * W1;
+W2grad = 1 / m * D2 + lambda * W2;
+
+Db1 = delta2 * ones( m, 1 );
+Db2 = delta3 * ones( m, 1 );
+
+b1grad = 1 / m * Db1 + lambda * 0;
+b2grad = 1 / m * Db2 + lambda * 0;
+
+cost = 1 / m / 2 * norm( hx - y ) .^ 2 + lambda * ( sum((W1.^2)(:)) + sum((W2.^2)(:)) ) + ...
+	   beta * compKL( sparsityParam, rho );
 
 %%
 
@@ -115,11 +130,11 @@ Db2 = 1 / m * delta3 * ones( m, 1 ) + lambda * 0;
 %    x = y;
 % a1 = 64 x 1    
 %    a1 = x;
-% z2 = 100x64 * 64x1 + 100x1 = 100 x 1
+% z2 = 25x64 * 64x1 + 25x1 = 25 x 1
 %    z2 = W1*a1 + b1;
-% a2 = 100 x 1
+% a2 = 25 x 1
 %    a2 = sigmoid(z2);
-% z3 = 64x100 * 100x1 + 64x1 = 64 x 1
+% z3 = 64x25 * 25x1 + 64x1 = 64 x 1
 %    z3 = W2*a2 + b2;
 % a3 = 64 x 1
 %    a3 = sigmoid(z3);
@@ -128,7 +143,7 @@ Db2 = 1 / m * delta3 * ones( m, 1 ) + lambda * 0;
 %    partCost = partCost + 1/2*norm(hx-y).^2;
 % delta3 = 64 x 1    
 %    delta3 = -(y-a3).*a3.*(1-a3);
-% delta2 = (64x100)' * 64x1 = 100 x 1    
+% delta2 = (64x25)' * 64x1 = 25 x 1    
     % dalta 2 withour sparsity parameter is:
     % delta2 = W2'*delta3.*a2.*(1-a2);
 %    delta2 = (W2'*delta3 + ...
@@ -156,34 +171,34 @@ Db2 = 1 / m * delta3 * ones( m, 1 ) + lambda * 0;
 % with lambda = 0 and beta = 0
 % cost = 1/m * partCost;
 % with beta = 0;
-cost = 1/m * partCost + lambda/2 * sum([sum(sum(W1.^2)) sum(sum(W2.^2))]);
+%cost = 1/m * partCost + lambda/2 * sum([sum(sum(W1.^2)) sum(sum(W2.^2))]);
 
 % Add sparsity term
-cost = cost + beta*sum(compKL(sparsityParam,rho));
+%cost = cost + beta*sum(compKL(sparsityParam,rho));
 
 % Compute W1grad:
 % with lambda = 0 and beta = 0
 % W1grad = 1/m * DW1;
 % with beta = 0;
-W1grad = 1/m * DW1 + lambda * W1;
+%W1grad = 1/m * DW1 + lambda * W1;
 
 % Compute W2grad:
 % with lambda = 0 and beta = 0
 % W2grad = 1/m * DW2;
 % with beta = 0;
-W2grad = 1/m * DW2 + lambda * W2;
+%W2grad = 1/m * DW2 + lambda * W2;
 
 % Compute b1grad:
 % with lambda = 0 and beta = 0
 % b1grad = 1/m * Db1;
 % with beta = 0;
-b1grad = 1/m * Db1;
+%b1grad = 1/m * Db1;
 
 % Compute b2grad:
 % with lambda = 0 and beta = 0
 % b2grad = 1/m * Db2;
 % with beta = 0;
-b2grad = 1/m * Db2;
+%b2grad = 1/m * Db2;
  
 
 %-------------------------------------------------------------------
@@ -212,4 +227,3 @@ function sigm = sigmoid(x)
   
     sigm = 1 ./ (1 + exp(-x));
 end
-

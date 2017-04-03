@@ -27,14 +27,13 @@ beta = 3;            % weight of sparsity penalty term
 %
 %  After implementing sampleIMAGES, the display_network command should
 %  display a random sample of 200 patches from the dataset
-
+disp("STEP1");
 patches = sampleIMAGES;
-display_network(patches(:,randi(size(patches,2),200,1)),8);
-
+%display_network(patches(:,randi(size(patches,2),200,1)),8);
 
 %  Obtain random parameters theta
 theta = initializeParameters(hiddenSize, visibleSize);
-
+disp("END STEP1");
 %%======================================================================
 %% STEP 2: Implement sparseAutoencoderCost
 %
@@ -61,10 +60,10 @@ theta = initializeParameters(hiddenSize, visibleSize);
 %  and/or lambda to zero may be helpful for debugging.)  However, in your 
 %  final submission of the visualized weights, please use parameters we 
 %  gave in Step 0 above.
-
+disp("STEP2");
 [cost, grad] = sparseAutoencoderCost(theta, visibleSize, hiddenSize, lambda, ...
                                      sparsityParam, beta, patches);
-
+disp("END STEP2");
 %%======================================================================
 %% STEP 3: Gradient Checking
 %
@@ -74,9 +73,12 @@ theta = initializeParameters(hiddenSize, visibleSize);
 
 % First, lets make sure your numerical gradient computation is correct for a
 % simple function.  After you have implemented computeNumericalGradient.m,
-% run the following: 
+% run the following:
+disp("STEP3");
+disp("checkNumericalGradient()");
 checkNumericalGradient();
-
+disp("end checkNumericalGradient()");
+pause
 % Now we can use it to check your cost function and derivative calculations
 % for the sparse autoencoder.  
 numgrad = computeNumericalGradient( @(x) sparseAutoencoderCost(x, visibleSize, ...
@@ -85,7 +87,7 @@ numgrad = computeNumericalGradient( @(x) sparseAutoencoderCost(x, visibleSize, .
                                                   patches), theta);
 
 % Use this to visually compare the gradients side by side
-disp([numgrad grad]); 
+%disp([numgrad grad]); 
 
 % Compare numerically computed gradients with the ones obtained from backpropagation
 diff = norm(numgrad-grad)/norm(numgrad+grad);
@@ -94,6 +96,8 @@ disp(diff); % Should be small. In our implementation, these values are
 
             % When you got this working, Congratulations!!! 
 
+disp("END STEP3");
+pause
 %%======================================================================
 %% STEP 4: After verifying that your implementation of
 %  sparseAutoencoderCost is correct, You can start training your sparse
@@ -123,8 +127,8 @@ options.display = 'on';
 %% STEP 5: Visualization 
 
 W1 = reshape(opttheta(1:hiddenSize*visibleSize), hiddenSize, visibleSize);
-display_network(W1', 12); 
+%display_network(W1', 12); 
 
-print -djpeg weights.jpg   % save the visualization to a file 
+%print -djpeg weights.jpg   % save the visualization to a file 
 
 

@@ -18,12 +18,16 @@ numgrad = zeros(size(theta));
 %                
 % Hint: You will probably want to compute the elements of numgrad one at a time. 
 
+EPSILON = 1e-4;
+perturb = zeros( size( theta ) );
+for i = 1 : numel( theta )
+	
+	perturb(i) = EPSILON;
+	numgrad(i) = ( J(theta+perturb) - J(theta-perturb) )/ ( 2*EPSILON );
+	perturb(i) = 0;
 
-
-
-
-
-
+end
+disp("OK");
 
 %% ---------------------------------------------------------------
 end
