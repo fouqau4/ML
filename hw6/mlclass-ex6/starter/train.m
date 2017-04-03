@@ -81,23 +81,22 @@ disp("end checkNumericalGradient()");
 pause
 % Now we can use it to check your cost function and derivative calculations
 % for the sparse autoencoder.  
-numgrad = computeNumericalGradient( @(x) sparseAutoencoderCost(x, visibleSize, ...
-                                                  hiddenSize, lambda, ...
-                                                  sparsityParam, beta, ...
-                                                  patches), theta);
+%numgrad = computeNumericalGradient( @(x) sparseAutoencoderCost(x, visibleSize, ...
+%                                                  hiddenSize, lambda, ...
+%                                                  sparsityParam, beta, ...
+%                                                  patches), theta);
 
 % Use this to visually compare the gradients side by side
 %disp([numgrad grad]); 
 
 % Compare numerically computed gradients with the ones obtained from backpropagation
-diff = norm(numgrad-grad)/norm(numgrad+grad);
-disp(diff); % Should be small. In our implementation, these values are
+%diff = norm(numgrad-grad)/norm(numgrad+grad);
+%disp(diff); % Should be small. In our implementation, these values are
             % usually less than 1e-9.
 
             % When you got this working, Congratulations!!! 
 
 disp("END STEP3");
-pause
 %%======================================================================
 %% STEP 4: After verifying that your implementation of
 %  sparseAutoencoderCost is correct, You can start training your sparse
@@ -115,6 +114,7 @@ options.Method = 'lbfgs'; % Here, we use L-BFGS to optimize our cost
                           % sparseAutoencoderCost.m satisfies this.
 options.maxIter = 400;	  % Maximum number of iterations of L-BFGS to run 
 options.display = 'on';
+options.useMex = 0;
 
 
 [opttheta, cost] = minFunc( @(p) sparseAutoencoderCost(p, ...
